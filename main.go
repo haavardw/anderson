@@ -101,10 +101,6 @@ func loadConfig() (config anderson.Config, missing bool) {
 }
 
 func lister() Lister {
-	if isStdinPipe() {
-		return anderson.StdinLister{}
-	}
-
 	return anderson.PackageLister{}
 }
 
