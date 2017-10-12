@@ -88,8 +88,16 @@ func main() {
 }
 
 func loadConfig() (config anderson.Config, missing bool) {
-	configFile, err := os.Open(".anderson.yml")
-	if err != nil {
+	paths := []string{".anderson.yml", "../.anderson.yml"}
+	var configFile *os.File
+	for _, p := range paths {
+		var err error
+		configFile, err = os.Open(p)
+		if err == nil {
+			break
+		}
+	}
+	if configFile == nil {
 		return config, true
 	}
 
