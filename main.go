@@ -88,7 +88,11 @@ func main() {
 }
 
 func loadConfig() (config anderson.Config, missing bool) {
-	paths := []string{".anderson.yml", "../.anderson.yml"}
+	paths := []string{
+		".anderson.yml",
+		"../.anderson.yml",
+		"../../.anderson.yml",
+	}
 	var configFile *os.File
 	for _, p := range paths {
 		var err error
