@@ -2,6 +2,8 @@ package anderson
 
 import (
 	"fmt"
+	"log"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -16,6 +18,18 @@ type LicenseClassifier struct {
 	Config Config
 }
 
+func (c LicenseClassifier) vendorPath(p string) string {
+	vendor := c.parentPath(p, 3)
+	if path.Base(vendor) != "vendor" {
+		return ""
+	}
+	repo := path.Base(c.parentPath(p, 2))
+	p0 := path.Base(c.parentPath(p, 1))
+	p1 := path.Base(c.parentPath(p, 0))
+
+	return fmt.Sprintf("%s/%s_%s_%s", p, repo, p0, p1)
+}
+
 func (c LicenseClassifier) Classify(path string, importPath string) (LicenseStatus, string, string, error) {
 	for hops := 0; hops < maxParentHops; hops++ {
 		newPath := c.parentPath(path, hops)
@@ -27,6 +41,16 @@ func (c LicenseClassifier) Classify(path string, importPath string) (LicenseStat
 
 		if status != LicenseTypeNoLicense {
 			return status, newPath, licenseType, err
+		}
+
+		newVendorPath := c.vendorPath(newPath)
+		if newVendorPath != "" {
+			log.Println("TESTING VENDORPATH", newVendorPath)
+			status, licenseType, err = c.classifyPath(newVendorPath, importPath)
+
+			if status != LicenseTypeNoLicense {
+				return status, newPath, licenseType, err
+			}
 		}
 	}
 
