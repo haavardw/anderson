@@ -2,6 +2,7 @@ package anderson
 
 import (
 	"fmt"
+	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -22,11 +23,29 @@ func (c LicenseClassifier) vendorPath(p string) string {
 	if path.Base(vendor) != "vendor" {
 		return ""
 	}
-	repo := path.Base(c.parentPath(p, 2))
-	p0 := path.Base(c.parentPath(p, 1))
-	p1 := path.Base(c.parentPath(p, 0))
 
-	return fmt.Sprintf("%s/%s_%s_%s", p, repo, p0, p1)
+	repo := path.Base(c.parentPath(p, 2))
+	p1 := path.Base(c.parentPath(p, 1))
+	p0 := path.Base(c.parentPath(p, 0))
+	baseCandidates := []string{
+		fmt.Sprintf("%s_%s", repo, p1),
+		fmt.Sprintf("%s_%s_%s", repo, p1, p0),
+	}
+	dirCandidates := []string{
+		c.parentPath(p, 0),
+		c.parentPath(p, 1),
+	}
+
+	for _, d := range dirCandidates {
+		for _, b := range baseCandidates {
+			test := filepath.Join(d, b)
+			if _, err := os.Stat(test); err == nil {
+				return test
+			}
+		}
+	}
+
+	return ""
 }
 
 func (c LicenseClassifier) Classify(path string, importPath string) (LicenseStatus, string, string, error) {
