@@ -47,12 +47,12 @@ func main() {
 
 		containingGopath, err := anderson.ContainingGopath(importPath)
 		if err != nil {
-			fatalf("Unable to find containing GOPATH for %s: %s", licenseDeclarationPath, err)
+			fatalf("Unable to find containing GOPATH for %s: %s", licenseDeclarationPath, err.Error())
 		}
 
 		relPath, err := filepath.Rel(filepath.Join(containingGopath, "src"), licenseDeclarationPath)
 		if err != nil {
-			fatalf("Unable to create relative path for %s: %s", licenseDeclarationPath, err)
+			fatalf("Unable to create relative path for %s: %s", licenseDeclarationPath, err.Error())
 		}
 
 		classified[relPath] = License{
@@ -118,7 +118,7 @@ func isStdinPipe() bool {
 }
 
 func fatalf(err string, args ...interface{}) {
-	message := fmt.Sprintf(err, args)
+	message := fmt.Sprintf(err, args...)
 	say(fmt.Sprintf("[red]> %s", message))
 	os.Exit(1)
 }
