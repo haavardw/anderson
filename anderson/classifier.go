@@ -2,7 +2,6 @@ package anderson
 
 import (
 	"fmt"
-	"log"
 	"path"
 	"path/filepath"
 	"strings"
@@ -45,7 +44,6 @@ func (c LicenseClassifier) Classify(path string, importPath string) (LicenseStat
 
 		newVendorPath := c.vendorPath(newPath)
 		if newVendorPath != "" {
-			log.Println("TESTING VENDORPATH", newVendorPath)
 			status, licenseType, err = c.classifyPath(newVendorPath, importPath)
 
 			if status != LicenseTypeNoLicense {
